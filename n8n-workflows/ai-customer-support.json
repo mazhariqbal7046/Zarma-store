@@ -1,0 +1,10 @@
+{
+  "name": "Zarma - Gemini customer support bridge",
+  "nodes": [
+    {"parameters":{"httpMethod":"POST","path":"zarma/ai-support","authentication":"headerAuth","responseMode":"responseNode","options":{}},"id":"support-webhook","name":"Authorized support request","type":"n8n-nodes-base.webhook","typeVersion":2.1,"position":[0,0],"webhookId":"zarma-ai-support","credentials":{"httpHeaderAuth":{"id":"","name":"Zarma webhook secret"}}},
+    {"parameters":{"method":"POST","url":"={{$env.ZARMA_API_BASE_URL}}/api/v1/ai/assistant","sendHeaders":true,"headerParameters":{"parameters":[{"name":"Authorization","value":"={{$json.headers?.authorization}}"},{"name":"Content-Type","value":"application/json"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={{ { query: $json.body?.query || $json.query, conversation_id: $json.body?.conversation_id || $json.conversation_id } }}","options":{"timeout":30000}},"id":"fastapi-ai","name":"Ask FastAPI Gemini assistant","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[300,0] },
+    {"parameters":{"respondWith":"json","responseBody":"={{$json}}","options":{}},"id":"support-response","name":"Return assistant response","type":"n8n-nodes-base.respondToWebhook","typeVersion":1.1,"position":[600,0]}
+  ],
+  "connections":{"Authorized support request":{"main":[[{"node":"Ask FastAPI Gemini assistant","type":"main","index":0}]]},"Ask FastAPI Gemini assistant":{"main":[[{"node":"Return assistant response","type":"main","index":0}]]}},
+  "active":false,"settings":{"executionOrder":"v1"},"tags":[]
+}

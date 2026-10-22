@@ -1,0 +1,10 @@
+{
+  "name": "Zarma - Inventory alerts",
+  "nodes": [
+    {"parameters":{"httpMethod":"POST","path":"zarma/inventory-alert","authentication":"headerAuth","responseMode":"onReceived","options":{}},"id":"inventory-webhook","name":"Inventory event","type":"n8n-nodes-base.webhook","typeVersion":2.1,"position":[0,0],"webhookId":"zarma-inventory-alert","credentials":{"httpHeaderAuth":{"id":"","name":"Zarma webhook secret"}}},
+    {"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"leftValue":"={{$json.data?.stock_status || $json.stock_status}}","rightValue":"out_of_stock","operator":{"type":"string","operation":"equals"}}],"combinator":"and"}},"id":"stock-switch","name":"Out of stock?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[260,0]},
+    {"parameters":{"sendTo":"={{$env.ORDER_MANAGER_EMAIL}}","subject":"Zarma inventory alert - {{$json.data?.product_name || $json.product_name}}","message":"Inventory alert for {{$json.data?.product_name || $json.product_name}}. Status: {{$json.data?.stock_status || $json.stock_status}}. Remaining: {{$json.data?.quantity ?? $json.quantity}}.","options":{}},"id":"inventory-email","name":"Notify inventory manager","type":"n8n-nodes-base.gmail","typeVersion":2.1,"position":[540,0],"credentials":{"gmailOAuth2":{"id":"","name":"Zarma Gmail"}}}
+  ],
+  "connections":{"Inventory event":{"main":[[{"node":"Out of stock?","type":"main","index":0}]]},"Out of stock?":{"main":[[{"node":"Notify inventory manager","type":"main","index":0}],[]]}},
+  "active":false,"settings":{"executionOrder":"v1"},"tags":[]
+}

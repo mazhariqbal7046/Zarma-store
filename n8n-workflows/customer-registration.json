@@ -1,0 +1,9 @@
+{
+  "name": "Zarma - Customer registration welcome",
+  "nodes": [
+    {"parameters":{"httpMethod":"POST","path":"zarma/customer-registered","authentication":"headerAuth","responseMode":"onReceived","options":{}},"id":"registration-webhook","name":"Customer registered","type":"n8n-nodes-base.webhook","typeVersion":2.1,"position":[0,0],"webhookId":"zarma-customer-registered","credentials":{"httpHeaderAuth":{"id":"","name":"Zarma webhook secret"}}},
+    {"parameters":{"sendTo":"={{$json.data?.email || $json.email}}","subject":"Welcome to Zarma Store","message":"Hi {{$json.data?.name || $json.name || 'there'}},\n\nWelcome to Zarma Store. Your account is ready — discover a calmer way to shop.\n\nZarma Store","options":{}},"id":"welcome-email","name":"Send welcome Gmail","type":"n8n-nodes-base.gmail","typeVersion":2.1,"position":[300,0],"credentials":{"gmailOAuth2":{"id":"","name":"Zarma Gmail"}}}
+  ],
+  "connections":{"Customer registered":{"main":[[{"node":"Send welcome Gmail","type":"main","index":0}]]}},
+  "active":false,"settings":{"executionOrder":"v1"},"tags":[]
+}

@@ -1,0 +1,27 @@
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python
+**/.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/*.tsbuildinfo
+
+# Node / Next.js
+**/node_modules/
+**/.next/
+**/.next-stale-*/
+**/.next-*/
+**/.temp/
+**/out/
+
+# Local logs and tooling state
+*.log
+.DS_Store
+.vscode/*.user

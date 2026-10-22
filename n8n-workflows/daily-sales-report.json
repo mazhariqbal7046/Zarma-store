@@ -1,0 +1,11 @@
+{
+  "name": "Zarma - Daily sales report 20:00 Asia Karachi",
+  "nodes": [
+    {"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"0 20 * * *"}]}},"id":"daily-schedule","name":"Every day at 20:00","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[0,0]},
+    {"parameters":{"method":"GET","url":"={{$env.ZARMA_API_BASE_URL}}/api/v1/admin/analytics","sendHeaders":true,"headerParameters":{"parameters":[{"name":"Authorization","value":"=Bearer {{$env.ZARMA_ADMIN_TOKEN}}"}]},"options":{"timeout":30000}},"id":"analytics-request","name":"Fetch verified analytics","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[280,0]},
+    {"parameters":{"jsCode":"const a = $json;\nreturn [{ json: { subject: `Zarma daily sales report - ${new Date().toISOString().slice(0, 10)}`, report: `Orders: ${a.orders?.count ?? 0}\\nGross PKR: ${a.orders?.gross_pkr ?? 0}\\nCommission PKR: ${a.commission?.commission_pkr ?? 0}` } }];"},"id":"format-report","name":"Format report","type":"n8n-nodes-base.code","typeVersion":2,"position":[540,0]},
+    {"parameters":{"sendTo":"={{$env.ORDER_MANAGER_EMAIL}}","subject":"={{$json.subject}}","message":"={{$json.report}}","options":{}},"id":"sales-email","name":"Send Gmail report","type":"n8n-nodes-base.gmail","typeVersion":2.1,"position":[800,0],"credentials":{"gmailOAuth2":{"id":"","name":"Zarma Gmail"}}}
+  ],
+  "connections":{"Every day at 20:00":{"main":[[{"node":"Fetch verified analytics","type":"main","index":0}]]},"Fetch verified analytics":{"main":[[{"node":"Format report","type":"main","index":0}]]},"Format report":{"main":[[{"node":"Send Gmail report","type":"main","index":0}]]}},
+  "active":false,"settings":{"executionOrder":"v1","timezone":"Asia/Karachi"},"tags":[]
+}

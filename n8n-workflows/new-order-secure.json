@@ -1,0 +1,66 @@
+{
+  "name": "Zarma - Secure new order notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zarma/new-order",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "zarma-order-webhook",
+      "name": "Secure order webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "webhookId": "zarma-new-order-secure",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Zarma webhook secret"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nreturn [{ json: { ...body, received_at: new Date().toISOString() } }];"
+      },
+      "id": "normalize-order-event",
+      "name": "Normalize order event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{$env.ORDER_FROM_EMAIL}}",
+        "toEmail": "={{$env.ORDER_MANAGER_EMAIL}}",
+        "subject": "New Zarma order {{$json.data?.order_id || $json.order_id}}",
+        "text": "A new order was created. Total: {{$json.data?.total_pkr || $json.total_pkr}} PKR. Event: {{$json.event_id}}. Verify it in the Zarma admin dashboard."
+      },
+      "id": "email-order-manager",
+      "name": "Email order manager",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [520, 0],
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "Zarma SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Secure order webhook": {
+      "main": [[{"node": "Normalize order event", "type": "main", "index": 0}]]
+    },
+    "Normalize order event": {
+      "main": [[{"node": "Email order manager", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {"executionOrder": "v1"},
+  "tags": []
+}

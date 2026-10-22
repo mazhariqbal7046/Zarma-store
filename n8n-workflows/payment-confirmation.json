@@ -1,0 +1,10 @@
+{
+  "name": "Zarma - Verified payment confirmation",
+  "nodes": [
+    {"parameters":{"httpMethod":"POST","path":"zarma/payment-verified","authentication":"headerAuth","responseMode":"onReceived","options":{}},"id":"payment-webhook","name":"Payment event","type":"n8n-nodes-base.webhook","typeVersion":2.1,"position":[0,0],"webhookId":"zarma-payment-verified","credentials":{"httpHeaderAuth":{"id":"","name":"Zarma webhook secret"}}},
+    {"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":2},"conditions":[{"leftValue":"={{$json.data?.status || $json.status}}","rightValue":"paid","operator":{"type":"string","operation":"equals"}}],"combinator":"and"}},"id":"payment-paid","name":"Only verified paid events","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[260,0]},
+    {"parameters":{"sendTo":"={{$json.data?.customer_email || $json.customer_email}}","subject":"Zarma payment confirmed - {{$json.data?.order_id || $json.order_id}}","message":"Your payment for order {{$json.data?.order_id || $json.order_id}} has been verified successfully. Amount: PKR {{$json.data?.amount_pkr || $json.amount_pkr}}.","options":{}},"id":"payment-email","name":"Send payment confirmation","type":"n8n-nodes-base.gmail","typeVersion":2.1,"position":[540,0],"credentials":{"gmailOAuth2":{"id":"","name":"Zarma Gmail"}}}
+  ],
+  "connections":{"Payment event":{"main":[[{"node":"Only verified paid events","type":"main","index":0}]]},"Only verified paid events":{"main":[[{"node":"Send payment confirmation","type":"main","index":0}],[]]}},
+  "active":false,"settings":{"executionOrder":"v1"},"tags":[]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Zarma - Order tracking notifications",
+  "nodes": [
+    {"parameters":{"httpMethod":"POST","path":"zarma/order-status","authentication":"headerAuth","responseMode":"onReceived","options":{}},"id":"status-webhook","name":"Order status event","type":"n8n-nodes-base.webhook","typeVersion":2.1,"position":[0,0],"webhookId":"zarma-order-status","credentials":{"httpHeaderAuth":{"id":"","name":"Zarma webhook secret"}}},
+    {"parameters":{"sendTo":"={{$json.data?.customer_email || $json.customer_email}}","subject":"Zarma order {{$json.data?.order_id || $json.order_id}} - {{$json.data?.status || $json.status}}","message":"Your Zarma order {{$json.data?.order_id || $json.order_id}} is now {{$json.data?.status || $json.status}}. We will keep you updated.","options":{}},"id":"status-email","name":"Notify customer Gmail","type":"n8n-nodes-base.gmail","typeVersion":2.1,"position":[300,0],"credentials":{"gmailOAuth2":{"id":"","name":"Zarma Gmail"}}}
+  ],
+  "connections":{"Order status event":{"main":[[{"node":"Notify customer Gmail","type":"main","index":0}]]}},
+  "active":false,"settings":{"executionOrder":"v1"},"tags":[]
+}
